@@ -1,0 +1,30 @@
+=media ($size)
+    @media screen and ( min-width: #{$size}px )
+        @content
+
+body
+    background-color: #4d4d80
+
+.wrapper
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 95vh
+
+.map
+    position: relative
+    width: 500px
+    height: 500px
+    background-image: url(../img/map.avif)
+    background-size: cover
+
+.treasure
+    position: absolute
+    display: none
+    // content: ''
+    top: 0
+    left: 0
+    width: 35px
+    height: 36px
+    background-image: url(../img/treasure_box.png)
+    background-size: contain
