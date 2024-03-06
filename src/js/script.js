@@ -14,29 +14,76 @@ let map = document.querySelector(".map"),
     indentation_top = map.getBoundingClientRect().top, // відступ до елемента по y
     treasure_x = rand(0, width - width_treasure),
     treasure_y = rand(0, height - height_treasure),
-    approach = 0 // спроби
+    approach = 0, // спроби
+    isApproach = true,
+    arrow = document.querySelector(".arrow")
 
 treasure.style.left = treasure_x + "px"
 treasure.style.top = treasure_y + "px"
 
-map.addEventListener('click', function(event) { // визначаємо координати кліка курсора
-    let cursor_x = parseInt(event.clientX - indentation_left),
-        cursor_y = parseInt(event.clientY - indentation_top)
+function getDistanceBetweenPoints(x1, y1, x2, y2) {
+    // Розрахунок різниці координат
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+  
+    // Використання теореми Піфагора
+    const distance = Math.sqrt(dx * dx + dy * dy);
+  
+    // Повернення відстані
+    return distance;
+}
 
-    approach++
-    console.log(approach)
+function getAngleBetweenPoints(point1, point2) {
+    // Обчислення різниці координат
+    let dx = point2.x - point1.x;
+    let dy = point2.y - point1.y;
+  
+    // Обчислення тангенса кута
+    let tanTheta = dy / dx;
+  
+    // Перетворення тангенса в радіани
+    let thetaRadians = Math.atan(tanTheta);
+  
+    // Перетворення радіанів в градуси
+    let thetaDegrees = thetaRadians * 180 / Math.PI;
+  
+    // Корекція кута для негативних значень dx
+    if (dx < 0) {
+      thetaDegrees += 180;
+    }
+  
+    // Повернення градусної міри кута
+    return thetaDegrees + 180
+}
+
+map.addEventListener('click', function(event) { // визначаємо координати кліка курсора
+    if (isApproach) {
+        let cursor_x = parseInt(event.clientX - indentation_left),
+            cursor_y = parseInt(event.clientY - indentation_top)
     
-    if (approach <= 10) {
-        if(cursor_x >= treasure_x - 50 && cursor_x <= treasure_x + width_treasure + 50 && cursor_y >= treasure_y - 50 && cursor_y <= treasure_y + height_treasure + 50) {
-            treasure.style.display = "block"
-            alert("Вітаю! Ви знайшли скарб!!!")
-        } else {
-            if (approach === 10) {
-                alert("На цьому острові скарбів нема :(")
+        approach++
+        console.log(approach)
+        
+        arrow.style.top = cursor_y + "px"
+        arrow.style.left = cursor_x + "px"
+        arrow.style.display = "block"
+        arrow.style.transform = "rotate(" + getAngleBetweenPoints({x: cursor_x, y: cursor_y}, {x: treasure_x, y: treasure_y}) + "deg)"
+        
+        if (approach <= 10) {
+            if(cursor_x >= treasure_x - 50 && cursor_x <= treasure_x + width_treasure + 50 && cursor_y >= treasure_y - 50 && cursor_y <= treasure_y + height_treasure + 50) {
+                treasure.style.display = "block"
+                isApproach = false
+                alert("Вітаю! Ви знайшли скарб!!!")
             } else {
-                alert("Тут скарба нема, пірат тебе обманув.")
+
+                if (approach === 10) {
+                    isApproach = false
+                    alert("На цьому острові скарбів нема :(")
+                } else {
+                    alert("Тут скарба нема, пірат тебе обманув. Відстань до скарбу " + Math.floor(getDistanceBetweenPoints(cursor_x, cursor_y, treasure_x, treasure_y)) + "px")
+                }
+                // alert(cursor_x + " " + cursor_y)
             }
-            // alert(cursor_x + " " + cursor_y)
         }
     }
 })
