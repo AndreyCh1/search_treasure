@@ -16,7 +16,8 @@ let map = document.querySelector(".map"),
     treasure_y = rand(0, height - height_treasure),
     approach = 0, // спроби
     isApproach = true,
-    arrow = document.querySelector(".arrow")
+    arrow = document.querySelector(".arrow"),
+    restart = document.querySelector(".restart")
 
 treasure.style.left = treasure_x + "px"
 treasure.style.top = treasure_y + "px"
@@ -64,22 +65,30 @@ map.addEventListener('click', function(event) { // визначаємо коор
         approach++
         console.log(approach)
         
-        arrow.style.top = cursor_y + "px"
-        arrow.style.left = cursor_x + "px"
-        arrow.style.display = "block"
-        arrow.style.transform = "rotate(" + getAngleBetweenPoints({x: cursor_x, y: cursor_y}, {x: treasure_x, y: treasure_y}) + "deg)"
         
         if (approach <= 10) {
-            if(cursor_x >= treasure_x - 50 && cursor_x <= treasure_x + width_treasure + 50 && cursor_y >= treasure_y - 50 && cursor_y <= treasure_y + height_treasure + 50) {
+            if(cursor_x >= treasure_x - 50 && cursor_x <= treasure_x + width_treasure + 50 && cursor_y >= treasure_y - 50 && cursor_y <= treasure_y + height_treasure + 50) { // визначаємо чи попав клік в зону скарба
                 treasure.style.display = "block"
+                arrow.style.display = "none"
                 isApproach = false
                 alert("Вітаю! Ви знайшли скарб!!!")
+                restart.style.display = "block"
+                restart.addEventListener('click', function() {
+                    location.reload()
+                })
             } else {
-
                 if (approach === 10) {
                     isApproach = false
                     alert("На цьому острові скарбів нема :(")
+                    restart.style.display = "block"
+                    restart.addEventListener('click', function() {
+                        isApproach = true
+                    })
                 } else {
+                    arrow.style.top = cursor_y + "px"
+                    arrow.style.left = cursor_x + "px"
+                    arrow.style.display = "block"
+                    arrow.style.transform = "rotate(" + getAngleBetweenPoints({x: cursor_x, y: cursor_y}, {x: treasure_x, y: treasure_y}) + "deg)"
                     alert("Тут скарба нема, пірат тебе обманув. Відстань до скарбу " + Math.floor(getDistanceBetweenPoints(cursor_x, cursor_y, treasure_x, treasure_y)) + "px")
                 }
                 // alert(cursor_x + " " + cursor_y)
